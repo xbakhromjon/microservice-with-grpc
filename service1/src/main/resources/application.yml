@@ -1,0 +1,22 @@
+server:
+  port: '8081'
+  servlet:
+    context-path: '/s1/api'
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9090/eureka
+
+spring:
+  application:
+    name: 's1'
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/test'
+    username: 'postgres'
+    password: '123'
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
