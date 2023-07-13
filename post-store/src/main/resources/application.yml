@@ -9,7 +9,7 @@ eureka:
 
 spring:
   application:
-    name: 's1'
+    name: 'post-store'
   datasource:
     url: 'jdbc:postgresql://localhost:5432/test'
     username: 'postgres'
