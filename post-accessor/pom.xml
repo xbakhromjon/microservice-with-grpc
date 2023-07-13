@@ -9,7 +9,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>service2</artifactId>
+    <artifactId>post-accessor</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

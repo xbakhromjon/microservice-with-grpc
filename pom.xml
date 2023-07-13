@@ -10,8 +10,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>api-gateway</module>
-        <module>service1</module>
-        <module>service2</module>
+        <module>post-store</module>
+        <module>post-accessor</module>
         <module>eureka-server</module>
     </modules>
 
