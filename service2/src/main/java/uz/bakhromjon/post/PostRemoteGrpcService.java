@@ -16,7 +16,7 @@ public class PostRemoteGrpcService {
     private final String remoteHost = "localhost";
     private final Integer remoteGrpcPort = 9000;
 
-    public PostRemoteResponse getOne(Long postId) {
+    public Post getOne(Long postId) {
         ManagedChannel channel = ManagedChannelBuilder.forAddress(remoteHost, remoteGrpcPort)
                 .usePlaintext()
                 .build();
@@ -28,7 +28,7 @@ public class PostRemoteGrpcService {
         return grpcMapper.toApplicationResponse(grpcResponse);
     }
 
-    public PageResponse<PostRemoteResponse> getList(Integer page, Integer size) {
+    public PageResponse<Post> getList(Integer page, Integer size) {
         ManagedChannel channel = ManagedChannelBuilder.forAddress(remoteHost, remoteGrpcPort)
                 .usePlaintext()
                 .build();
@@ -54,7 +54,7 @@ public class PostRemoteGrpcService {
         return isDeleted.getValue();
     }
 
-    public boolean update(PostRemoteResponse post) {
+    public boolean update(Post post) {
         ManagedChannel channel = ManagedChannelBuilder.forAddress(remoteHost, remoteGrpcPort)
                 .usePlaintext()
                 .build();

@@ -12,15 +12,15 @@ public class PostController {
     private final PostRemoteGrpcService remoteGrpcService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostRemoteResponse> getOne(@PathVariable Long id) {
-        PostRemoteResponse response = remoteGrpcService.getOne(id);
+    public ResponseEntity<Post> getOne(@PathVariable Long id) {
+        Post response = remoteGrpcService.getOne(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<PageResponse<PostRemoteResponse>> getList(@RequestParam(defaultValue = "0") Integer page,
-                                                                    @RequestParam(defaultValue = "10") Integer size) {
-        PageResponse<PostRemoteResponse> postList = remoteGrpcService.getList(page, size);
+    public ResponseEntity<PageResponse<Post>> getList(@RequestParam(defaultValue = "0") Integer page,
+                                                      @RequestParam(defaultValue = "10") Integer size) {
+        PageResponse<Post> postList = remoteGrpcService.getList(page, size);
         return ResponseEntity.ok(postList);
     }
 
@@ -29,8 +29,8 @@ public class PostController {
         return ResponseEntity.ok(remoteGrpcService.delete(id));
     }
 
-    @PutMapping
-    public ResponseEntity<Boolean> update(@RequestBody PostRemoteResponse post) {
+    @PutMapping()
+    public ResponseEntity<Boolean> update(@RequestBody Post post) {
         return ResponseEntity.ok(remoteGrpcService.update(post));
     }
 }

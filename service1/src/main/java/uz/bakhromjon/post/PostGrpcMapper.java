@@ -11,44 +11,44 @@ import java.util.List;
 @Component
 public class PostGrpcMapper {
 
-    public PostResponseGrpc toGrpcResponse(Post post) {
-        if (post == null) return null;
+    public PostResponseGrpc toGrpcResponse(Post source) {
+        if (source == null) return null;
 
         PostResponseGrpc.Builder builder = PostResponseGrpc.newBuilder();
-        if (post.getId() != null) {
-            builder.setId(post.getId());
+        if (source.getId() != null) {
+            builder.setId(source.getId());
         }
-        if (post.getUserId() != null) {
-            builder.setUserId(post.getUserId());
+        if (source.getUserId() != null) {
+            builder.setUserId(source.getUserId());
         }
-        if (post.getTitle() != null) {
-            builder.setTitle(post.getTitle());
+        if (source.getTitle() != null) {
+            builder.setTitle(source.getTitle());
         }
-        if (post.getBody() != null) {
-            builder.setBody(post.getBody());
+        if (source.getBody() != null) {
+            builder.setBody(source.getBody());
         }
 
         return builder.build();
     }
 
-    public List<PostResponseGrpc> toGrpcResponse(List<Post> postList) {
-        return postList.stream().map(this::toGrpcResponse).toList();
+    public List<PostResponseGrpc> toGrpcResponse(List<Post> sourceList) {
+        return sourceList.stream().map(this::toGrpcResponse).toList();
     }
 
 
-    public Post toPost(PostUpdateRequestGrpc updateRequest) {
-        return new Post(updateRequest.getId(),
-                updateRequest.getUserId(),
-                updateRequest.getTitle(),
-                updateRequest.getBody());
+    public Post toPost(PostUpdateRequestGrpc source) {
+        return new Post(source.getId(),
+                source.getUserId(),
+                source.getTitle(),
+                source.getBody());
     }
 
-    public PostPageableResponseGrpc toPageableGrpcResponse(Page<Post> postPage) {
+    public PostPageableResponseGrpc toPageableGrpcResponse(Page<Post> source) {
         PostPageableResponseGrpc.Builder builder = PostPageableResponseGrpc.newBuilder();
-        builder.addAllContent(toGrpcResponse(postPage.getContent()));
-        builder.setTotalElements(postPage.getTotalElements());
-        builder.setTotalPages(postPage.getTotalPages());
-        builder.setSize(postPage.getSize());
+        builder.addAllContent(toGrpcResponse(source.getContent()));
+        builder.setTotalElements(source.getTotalElements());
+        builder.setTotalPages(source.getTotalPages());
+        builder.setSize(source.getSize());
         return builder.build();
     }
 
