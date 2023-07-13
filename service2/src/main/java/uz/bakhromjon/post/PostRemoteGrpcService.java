@@ -1,59 +1,67 @@
 package uz.bakhromjon.post;
 
-import com.google.protobuf.Empty;
+import com.google.protobuf.BoolValue;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import uz.bakhromjon.common.PageResponse;
 import uz.bakhromjon.grpc.post.*;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class PostRemoteGrpcService {
     private final PostGrpcMapper grpcMapper;
 
-    public Post getOne(Long postId) {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9000)
+    private final String remoteHost = "localhost";
+    private final Integer remoteGrpcPort = 9000;
+
+    public PostRemoteResponse getOne(Long postId) {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(remoteHost, remoteGrpcPort)
                 .usePlaintext()
                 .build();
 
         PostServiceGrpc.PostServiceBlockingStub postServiceBlockingStub = PostServiceGrpc.newBlockingStub(channel);
         PostResponseGrpc grpcResponse = postServiceBlockingStub.getPost(PostGetRequestGrpc.newBuilder().setId(postId).build());
-
         channel.shutdown();
+
         return grpcMapper.toApplicationResponse(grpcResponse);
     }
 
-    public List<Post> getList() {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9000)
+    public PageResponse<PostRemoteResponse> getList(Integer page, Integer size) {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(remoteHost, remoteGrpcPort)
                 .usePlaintext()
                 .build();
 
         PostServiceGrpc.PostServiceBlockingStub postServiceBlockingStub = PostServiceGrpc.newBlockingStub(channel);
-        PostResponseListGrpc grpcResponseList = postServiceBlockingStub.getPostList(Empty.newBuilder().build());
-
+        PostPageableResponseGrpc grpcResponseList = postServiceBlockingStub.getPostList(GetPostsPageableRequestGrpc.newBuilder()
+                .setPage(page)
+                .setSize(size)
+                .build());
         channel.shutdown();
-        return grpcMapper.toApplicationResponse(grpcResponseList);
+
+        return grpcMapper.toApplicationPageResponse(grpcResponseList);
     }
 
-    public void delete(Long postId) {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9000)
+    public boolean delete(Long postId) {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(remoteHost, remoteGrpcPort)
                 .usePlaintext()
                 .build();
         PostServiceGrpc.PostServiceBlockingStub postServiceBlockingStub = PostServiceGrpc.newBlockingStub(channel);
-        postServiceBlockingStub.deletePost(PostDeleteRequestGrpc.newBuilder().setId(postId).build());
+        BoolValue isDeleted = postServiceBlockingStub.deletePost(PostDeleteRequestGrpc.newBuilder().setId(postId).build());
         channel.shutdown();
+
+        return isDeleted.getValue();
     }
 
-    public Post update(Post post) {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9000)
+    public boolean update(PostRemoteResponse post) {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(remoteHost, remoteGrpcPort)
                 .usePlaintext()
                 .build();
         PostServiceGrpc.PostServiceBlockingStub postServiceBlockingStub = PostServiceGrpc.newBlockingStub(channel);
-        PostResponseGrpc grpcResponse = postServiceBlockingStub.updatePost(grpcMapper.toPostUpdateRequestGrpc(post));
+        BoolValue isUpdated = postServiceBlockingStub.updatePost(grpcMapper.toPostUpdateRequestGrpc(post));
         channel.shutdown();
-        return grpcMapper.toApplicationResponse(grpcResponse);
+
+        return isUpdated.getValue();
     }
 }

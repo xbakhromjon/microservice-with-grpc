@@ -16,7 +16,6 @@ import java.util.List;
 public class PostLoaderService {
     private final RestTemplate restTemplate = new RestTemplate();
 
-
     public PostRemoteResponse loadPosts() throws JsonProcessingException {
         ResponseEntity<String> response = restTemplate.getForEntity("https://gorest.co.in/public/v1/posts", String.class);
         ObjectMapper objectMapper = new ObjectMapper();

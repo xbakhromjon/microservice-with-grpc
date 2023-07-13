@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Post {
+public class PostRemoteResponse {
     private Long id;
     @JsonProperty(value = "user_id")
     private Long userId;

@@ -2,9 +2,11 @@ package uz.bakhromjon.post;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,12 +27,17 @@ public class PostService {
         }
     }
 
-    public void delete(Long postId) {
-        repository.deleteById(postId);
+    public boolean delete(Long postId) {
+        try {
+            repository.deleteById(postId);
+            return true;
+        } catch (EmptyResultDataAccessException ignored) {
+            return false;
+        }
     }
 
-    public List<Post> getAll() {
-        return repository.findAll();
+    public Page<Post> getAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     public Post getOne(Long id) {
@@ -38,7 +45,11 @@ public class PostService {
         return postOptional.orElse(null);
     }
 
-    public Post update(Post post) {
-        return repository.save(post);
+    public boolean update(Post post) {
+        if (!repository.existsById(post.getId())) {
+            return false;
+        }
+        repository.save(post);
+        return true;
     }
 }

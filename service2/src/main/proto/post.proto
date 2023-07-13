@@ -1,14 +1,15 @@
 syntax = "proto3";
 import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
 
 option java_multiple_files = true;
 package uz.bakhromjon.grpc.post;
 
 service PostService {
   rpc GetPost(PostGetRequestGrpc) returns (PostResponseGrpc);
-  rpc GetPostList(google.protobuf.Empty) returns (PostResponseListGrpc);
-  rpc UpdatePost(PostUpdateRequestGrpc) returns (PostResponseGrpc);
-  rpc DeletePost(PostDeleteRequestGrpc) returns (google.protobuf.Empty);
+  rpc GetPostList(GetPostsPageableRequestGrpc) returns (PostPageableResponseGrpc);
+  rpc UpdatePost(PostUpdateRequestGrpc) returns (google.protobuf.BoolValue);
+  rpc DeletePost(PostDeleteRequestGrpc) returns (google.protobuf.BoolValue);
 }
 
 
@@ -20,8 +21,11 @@ message PostResponseGrpc {
   string body = 4;
 }
 
-message PostResponseListGrpc {
-  repeated PostResponseGrpc posts = 1;
+message PostPageableResponseGrpc {
+  repeated PostResponseGrpc content = 1;
+  int64 total_elements = 2;
+  int32 total_pages = 3;
+  int32 size = 4;
 }
 
 message PostDeleteRequestGrpc {
@@ -37,4 +41,9 @@ message PostUpdateRequestGrpc {
   int64 user_id = 2;
   string title = 3;
   string body = 4;
+}
+
+message GetPostsPageableRequestGrpc {
+  int32 page = 1;
+  int32 size = 2;
 }

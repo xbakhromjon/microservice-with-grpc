@@ -12,7 +12,6 @@
         <module>api-gateway</module>
         <module>service1</module>
         <module>service2</module>
-        <module>service3</module>
         <module>eureka-server</module>
     </modules>
 
@@ -27,6 +26,7 @@
         <sl4j-api-version>2.0.6</sl4j-api-version>
         <jackson-databind-version>2.15.2</jackson-databind-version>
         <postgres-version>42.4.0</postgres-version>
+        <springdoc-openapi-starter-webmvc-ui-version>2.0.2</springdoc-openapi-starter-webmvc-ui-version>
     </properties>
 
 </project>

@@ -1,8 +1,9 @@
 package uz.bakhromjon.post;
 
 import org.springframework.stereotype.Component;
+import uz.bakhromjon.common.PageResponse;
+import uz.bakhromjon.grpc.post.PostPageableResponseGrpc;
 import uz.bakhromjon.grpc.post.PostResponseGrpc;
-import uz.bakhromjon.grpc.post.PostResponseListGrpc;
 import uz.bakhromjon.grpc.post.PostUpdateRequestGrpc;
 
 import java.util.List;
@@ -10,15 +11,17 @@ import java.util.List;
 @Component
 public class PostGrpcMapper {
 
-    public Post toApplicationResponse(PostResponseGrpc grpcResponse) {
-        return new Post(grpcResponse.getId(), grpcResponse.getUserId(), grpcResponse.getTitle(), grpcResponse.getBody());
+    public PostRemoteResponse toApplicationResponse(PostResponseGrpc grpcResponse) {
+        return new PostRemoteResponse(grpcResponse.getId(), grpcResponse.getUserId(),
+                grpcResponse.getTitle(), grpcResponse.getBody());
     }
 
-    public List<Post> toApplicationResponse(PostResponseListGrpc grpcResponseList) {
-        return grpcResponseList.getPostsList().stream().map(grpcResponse -> toApplicationResponse(grpcResponse)).toList();
+    public List<PostRemoteResponse> toApplicationResponse(List<PostResponseGrpc> sourceList) {
+        return sourceList.stream().map(source -> new PostRemoteResponse(source.getId(),
+                source.getUserId(), source.getTitle(), source.getBody())).toList();
     }
 
-    public PostUpdateRequestGrpc toPostUpdateRequestGrpc(Post post) {
+    public PostUpdateRequestGrpc toPostUpdateRequestGrpc(PostRemoteResponse post) {
         PostUpdateRequestGrpc.Builder builder = PostUpdateRequestGrpc.newBuilder();
         if (post.getId() != null) {
             builder.setId(post.getId());
@@ -33,5 +36,10 @@ public class PostGrpcMapper {
             builder.setBody(post.getBody());
         }
         return builder.build();
+    }
+
+    public PageResponse<PostRemoteResponse> toApplicationPageResponse(PostPageableResponseGrpc grpcResponse) {
+        return new PageResponse<>(toApplicationResponse(grpcResponse.getContentList()),
+                grpcResponse.getTotalElements(), grpcResponse.getTotalPages(), grpcResponse.getSize());
     }
 }

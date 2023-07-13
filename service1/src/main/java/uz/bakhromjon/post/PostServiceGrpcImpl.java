@@ -1,12 +1,12 @@
 package uz.bakhromjon.post;
 
-import com.google.protobuf.Empty;
+import com.google.protobuf.BoolValue;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import uz.bakhromjon.grpc.post.*;
-
-import java.util.List;
 
 @GrpcService
 @RequiredArgsConstructor
@@ -23,27 +23,27 @@ public class PostServiceGrpcImpl extends PostServiceGrpc.PostServiceImplBase {
     }
 
     @Override
-    public void deletePost(PostDeleteRequestGrpc request, StreamObserver<Empty> responseObserver) {
-        service.delete(request.getId());
+    public void deletePost(PostDeleteRequestGrpc request, StreamObserver<BoolValue> responseObserver) {
+        boolean isDeleted = service.delete(request.getId());
 
-        responseObserver.onNext(Empty.newBuilder().build());
+        responseObserver.onNext(BoolValue.of(isDeleted));
         responseObserver.onCompleted();
     }
 
     @Override
-    public void getPostList(Empty request, StreamObserver<PostResponseListGrpc> responseObserver) {
-        List<Post> postList = service.getAll();
+    public void getPostList(GetPostsPageableRequestGrpc request, StreamObserver<PostPageableResponseGrpc> responseObserver) {
+        Page<Post> postPage = service.getAll(PageRequest.of(request.getPage(), request.getSize()));
 
-        responseObserver.onNext(grpcMapper.toGrpcResponseList(postList));
+        responseObserver.onNext(grpcMapper.toPageableGrpcResponse(postPage));
         responseObserver.onCompleted();
     }
 
 
     @Override
-    public void updatePost(PostUpdateRequestGrpc request, StreamObserver<PostResponseGrpc> responseObserver) {
+    public void updatePost(PostUpdateRequestGrpc request, StreamObserver<BoolValue> responseObserver) {
         Post post = grpcMapper.toPost(request);
-        post = service.update(post);
-        responseObserver.onNext(grpcMapper.toGrpcResponse(post));
+        boolean isUpdated = service.update(post);
+        responseObserver.onNext(BoolValue.of(isUpdated));
         responseObserver.onCompleted();
     }
 }
